@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "bitsandchiselspatcher",
+  "version": "${version}",
+  "name": "BitsAndChiselsPatcher",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/bitsandchiselspatcher/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "ru.polyakhovav.bitsandchiselspatcher.client.BitsAndChiselsPatcherClient"
+    ],
+    "main": [
+      "ru.polyakhovav.bitsandchiselspatcher.BitsAndChiselsPatcher"
+    ]
+  },
+  "mixins": [
+    "bitsandchiselspatcher.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=${kotlin_loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
