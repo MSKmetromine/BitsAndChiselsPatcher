@@ -4,7 +4,6 @@
   "package": "ru.polyakhovav.bitsandchiselspatcher.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "BitNbtUtilMixin",
     "BitsBlockEntityMixin",
     "BitsBlockMixin"
   ],

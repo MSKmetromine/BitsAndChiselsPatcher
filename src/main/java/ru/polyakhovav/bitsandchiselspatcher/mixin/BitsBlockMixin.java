@@ -3,19 +3,15 @@ package ru.polyakhovav.bitsandchiselspatcher.mixin;
 import io.github.coolmineman.bitsandchisels.BitsBlock;
 import io.github.coolmineman.bitsandchisels.BitsBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(BitsBlock.class)
 public class BitsBlockMixin {
-    /**
-     * @author A-Polyakhov
-     * @reason compatibility is not preservable
-     */
-    @Overwrite(remap = false)
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new BitsBlockEntity((BlockState[][][]) null, pos, state, false);
+    @Redirect(method = "newBlockEntity", at = @At(value = "NEW", target = "(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Lio/github/coolmineman/bitsandchisels/BitsBlockEntity;"))
+    public BitsBlockEntity newBlockEntityNew(BlockPos blockPos, BlockState blockState) {
+        return new BitsBlockEntity((BlockState[][][]) null, blockPos, blockState, false);
     }
 }
