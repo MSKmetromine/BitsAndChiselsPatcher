@@ -162,9 +162,7 @@ public class BitsBlockEntityMixin extends BlockEntity {
      */
     @Overwrite(remap = false)
     public void setState(int x, int y, int z, BlockState state) {
-        var bitsCopy = this.bits.clone();
-        bitsCopy[BitStorageUtil.INSTANCE.toIndex(x, y, z)] = state;
-        this.bits = SharedBitsCache.INSTANCE.get(bitsCopy);
+        this.bits = BitStorageUtil.INSTANCE.setBit(this.bits, x, y, z, state);
         this.alive = true;
 
         this.updateBlockState();

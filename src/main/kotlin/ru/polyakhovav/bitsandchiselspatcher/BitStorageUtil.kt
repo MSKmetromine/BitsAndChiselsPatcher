@@ -27,4 +27,10 @@ object BitStorageUtil {
     fun full(state: BlockState) = SharedBitsCache.get(
         Array(16 * 16 * 16) { state }
     )
+
+    fun setBit(bits: Array<BlockState>, x: Int, y: Int, z: Int, state: BlockState): Array<BlockState> {
+        var bitsCopy = bits.clone();
+        bitsCopy[toIndex(x, y, z)] = state;
+        return SharedBitsCache.get(bitsCopy);
+    }
 }
