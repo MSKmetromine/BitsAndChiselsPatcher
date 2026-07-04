@@ -17,7 +17,7 @@ object VoxelShapeBuildQueue {
     private val CACHE: ConcurrentMap<Int, CompletableFuture<VoxelShape>> = ConcurrentHashMap()
 
     fun queue(bits: Array<BlockState>) =
-        CompletableFuture.supplyAsync(bits::contentHashCode, ModExecutors.EXECUTOR)
+        CompletableFuture.supplyAsync({ SharedBitsCache.getIndex(bits) }, ModExecutors.EXECUTOR)
             .thenComposeAsync({ hash ->
                 CACHE.computeIfAbsent(hash) {
                     CompletableFuture.supplyAsync({

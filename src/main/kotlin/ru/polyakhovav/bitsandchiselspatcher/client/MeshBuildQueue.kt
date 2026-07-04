@@ -9,6 +9,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import ru.polyakhovav.bitsandchiselspatcher.BitStorageUtil
 import ru.polyakhovav.bitsandchiselspatcher.ModExecutors
+import ru.polyakhovav.bitsandchiselspatcher.SharedBitsCache
 import java.lang.ref.WeakReference
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -19,7 +20,7 @@ object MeshBuildQueue {
     private val CACHE: ConcurrentMap<Int, CompletableFuture<Mesh>> = ConcurrentHashMap()
 
     fun queue(level: Level, pos: BlockPos, bits: Array<BlockState>) =
-        CompletableFuture.supplyAsync(bits::contentHashCode, ModExecutors.EXECUTOR)
+        CompletableFuture.supplyAsync({ SharedBitsCache.getIndex(bits) }, ModExecutors.EXECUTOR)
             .thenComposeAsync({ hash ->
                 CACHE.computeIfAbsent(hash) {
                     CompletableFuture.supplyAsync({
