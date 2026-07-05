@@ -113,6 +113,8 @@ public class BitsBlockEntityMixin extends BlockEntity {
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
+
+            return;
         }
 
         if (this.level.isClientSide()) {
