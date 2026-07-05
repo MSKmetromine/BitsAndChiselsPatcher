@@ -46,8 +46,12 @@ public class BitsBlockEntityMixin extends BlockEntity {
 
     @Shadow
     private boolean alive;
+
     @Unique
     private BlockState[] bits;
+
+    @Unique
+    private boolean needsLightUpdate;
 
     private BitsBlockEntityMixin(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
@@ -100,8 +104,9 @@ public class BitsBlockEntityMixin extends BlockEntity {
         Consumer<VoxelShape> consumer = shape -> {
             this.shape = shape;
 
-            if (this.level != null && this.level.isClientSide()) {
+            if (this.needsLightUpdate && this.level != null && this.level.isClientSide()) {
                 Minecraft.getInstance().levelRenderer.setBlocksDirty(this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ(), this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ());
+                this.needsLightUpdate = false;
             }
         };
 
@@ -189,6 +194,7 @@ public class BitsBlockEntityMixin extends BlockEntity {
     public void setState(int x, int y, int z, BlockState state) {
         this.bits = BitStorageUtil.INSTANCE.setBit(this.bits, x, y, z, state);
         this.alive = true;
+        this.needsLightUpdate = true;
 
         this.updateBlockState();
     }
@@ -229,6 +235,7 @@ public class BitsBlockEntityMixin extends BlockEntity {
         var bits = BitStorageUtil.INSTANCE.from3D(states);
         this.bits = SharedBitsCache.INSTANCE.get(bits);
         this.alive = true;
+        this.needsLightUpdate = true;
 
         this.updateBlockState();
     }
