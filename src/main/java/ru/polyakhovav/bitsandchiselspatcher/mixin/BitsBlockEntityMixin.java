@@ -100,7 +100,7 @@ public class BitsBlockEntityMixin extends BlockEntity {
         Consumer<VoxelShape> consumer = shape -> {
             this.shape = shape;
 
-            if (this.level.isClientSide()) {
+            if (this.level != null && this.level.isClientSide()) {
                 Minecraft.getInstance().levelRenderer.setBlocksDirty(this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ(), this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ());
             }
         };
