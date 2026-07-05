@@ -27,8 +27,6 @@ import ru.polyakhovav.bitsandchiselspatcher.*;
 import ru.polyakhovav.bitsandchiselspatcher.client.MeshBuildQueue;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 
 @Mixin(BitsBlockEntity.class)
 public class BitsBlockEntityMixin extends BlockEntity {
@@ -97,31 +95,14 @@ public class BitsBlockEntityMixin extends BlockEntity {
      */
     @Overwrite(remap = false)
     protected void rebuildShape() {
-        Consumer<VoxelShape> consumer = shape -> {
-            this.shape = shape;
+        VoxelShapeBuildQueue.INSTANCE.queue(this.bits)
+                .thenAcceptAsync(shape -> {
+                    this.shape = shape;
 
-            if (this.level.isClientSide()) {
-                Minecraft.getInstance().levelRenderer.setBlocksDirty(this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ(), this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ());
-            }
-        };
-
-        var task = VoxelShapeBuildQueue.INSTANCE.queue(this.bits);
-
-        if (this.level == null) {
-            try {
-                consumer.accept(task.get());
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-
-            return;
-        }
-
-        if (this.level.isClientSide()) {
-            task.thenAcceptAsync(consumer, Minecraft.getInstance());
-        } else {
-            task.thenAcceptAsync(consumer, this.level.getServer());
-        }
+                    if (this.level != null && this.level.isClientSide()) {
+                        Minecraft.getInstance().levelRenderer.setBlocksDirty(this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ(), this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ());
+                    }
+                }, (this.level != null && this.level.isClientSide()) ? Minecraft.getInstance() : this.level.getServer());
     }
 
     /**
