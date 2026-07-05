@@ -96,7 +96,13 @@ public class BitsBlockEntityMixin extends BlockEntity {
     @Overwrite(remap = false)
     protected void rebuildShape() {
         VoxelShapeBuildQueue.INSTANCE.queue(this.bits)
-                .thenAcceptAsync(shape -> this.shape = shape, Minecraft.getInstance());
+                .thenAcceptAsync(shape -> {
+                    this.shape = shape;
+
+                    if (this.level.isClientSide()) {
+                        Minecraft.getInstance().levelRenderer.setBlocksDirty(this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ(), this.worldPosition.getX(), this.worldPosition.getY(), this.worldPosition.getZ());
+                    }
+                }, (this.level != null && this.level.isClientSide()) ? Minecraft.getInstance() : this.level.getServer());
     }
 
     /**

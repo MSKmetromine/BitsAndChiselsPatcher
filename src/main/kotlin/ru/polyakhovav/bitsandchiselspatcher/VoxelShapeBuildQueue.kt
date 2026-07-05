@@ -9,9 +9,12 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.shapes.BitSetDiscreteVoxelShape
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
+import ru.polyakhovav.bitsandchiselspatcher.client.MeshBuildQueue
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
+import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
 
 object VoxelShapeBuildQueue {
     private val CACHE: ConcurrentMap<Int, CompletableFuture<VoxelShape>> = ConcurrentHashMap()
@@ -35,8 +38,17 @@ object VoxelShapeBuildQueue {
                             )
                         }
 
-                            SimpleVoxelShapeFactory.getSimpleVoxelShape(voxelShape)
+                        SimpleVoxelShapeFactory.getSimpleVoxelShape(voxelShape) as VoxelShape
                     }, ModExecutors.EXECUTOR)
+                        .orTimeout(5L, TimeUnit.SECONDS)
+                        .exceptionally {
+                            Logger.getLogger("bitsandchiselspatcher")
+                                .log(java.util.logging.Level.SEVERE, "Failed to build bit voxel shape.", it)
+
+                            CACHE.remove(hash)
+
+                            null
+                        }
                 }
             }, ModExecutors.EXECUTOR)
 }
