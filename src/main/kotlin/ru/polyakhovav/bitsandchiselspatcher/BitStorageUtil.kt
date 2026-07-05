@@ -28,9 +28,9 @@ object BitStorageUtil {
         Array(16 * 16 * 16) { state }
     )
 
-    fun setBit(bits: Array<BlockState>, x: Int, y: Int, z: Int, state: BlockState): Array<BlockState> {
-        var bitsCopy = bits.clone();
-        bitsCopy[toIndex(x, y, z)] = state;
-        return SharedBitsCache.get(bitsCopy);
+    fun setBit(shape: BitShape, x: Int, y: Int, z: Int, state: BlockState): BitShape {
+        val bitsCopy = shape.bits.clone()
+        bitsCopy[toIndex(x, y, z)] = state
+        return SharedBitsCache.get(bitsCopy)
     }
 }

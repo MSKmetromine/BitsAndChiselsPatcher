@@ -48,7 +48,7 @@ public class BitsBlockEntityMixin extends BlockEntity {
     private boolean alive;
 
     @Unique
-    private BlockState[] bits;
+    private BitShape bits;
 
     @Unique
     private boolean needsLightUpdate;
@@ -73,9 +73,7 @@ public class BitsBlockEntityMixin extends BlockEntity {
         if (fillWithState == Blocks.AIR.defaultBlockState()) {
             this.bits = SharedBitsCache.INSTANCE.empty();
         } else {
-            this.bits = SharedBitsCache.INSTANCE.get(
-                    BitStorageUtil.INSTANCE.full(fillWithState)
-            );
+            this.bits = BitStorageUtil.INSTANCE.full(fillWithState);
         }
 
         this.states = null;
@@ -201,12 +199,12 @@ public class BitsBlockEntityMixin extends BlockEntity {
 
     @Unique
     private void updateBlockState() {
-        var firstBit = this.bits[0];
+        var firstBit = this.bits.getBits()[0];
 
         var fullBlock = true;
         var totalLight = 0;
 
-        for (var bit : this.bits) {
+        for (var bit : this.bits.getBits()) {
             if (bit != firstBit) {
                 fullBlock = false;
             }
@@ -246,7 +244,7 @@ public class BitsBlockEntityMixin extends BlockEntity {
      */
     @Overwrite(remap = false)
     public BlockState getState(int x, int y, int z) {
-        return this.bits[BitStorageUtil.INSTANCE.toIndex(x, y, z)];
+        return this.bits.getBits()[BitStorageUtil.INSTANCE.toIndex(x, y, z)];
     }
 
     /**
@@ -255,6 +253,6 @@ public class BitsBlockEntityMixin extends BlockEntity {
      */
     @Overwrite(remap = false)
     public BlockState[][][] getStates() {
-        return BitStorageUtil.INSTANCE.to3D(this.bits);
+        return BitStorageUtil.INSTANCE.to3D(this.bits.getBits());
     }
 }
