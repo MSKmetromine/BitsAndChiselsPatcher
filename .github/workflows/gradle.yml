@@ -15,6 +15,13 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        minecraft_version:
+          - 1.18.2
+          - 1.19.2
+          - 1.19.4
+          - 1.20.1
 
     runs-on: ubuntu-latest
     permissions:
@@ -34,11 +41,12 @@ jobs:
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: ./gradlew -Pminecraft_version=${{ matrix.minecraft_version }} build
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v7
         with:
+          name: ${{ matrix.minecraft_version }}
           path: "build/libs/*"
 
 

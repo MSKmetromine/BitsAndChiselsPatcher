@@ -1,3 +1,4 @@
+import org.gradle.internal.extensions.core.extra
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -7,7 +8,7 @@ plugins {
     id("maven-publish")
 }
 
-version = project.property("mod_version") as String
+version = "${project.property("mod_version") as String}-${project.property("minecraft_version")}"
 group = project.property("maven_group") as String
 
 base {
@@ -49,27 +50,27 @@ dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
     mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
-    modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("kotlin_loader_version")}")
+    modImplementation("net.fabricmc:fabric-loader:${gradle.extra.get("loader_version")}")
+    modImplementation("net.fabricmc:fabric-language-kotlin:${gradle.extra.get("kotlin_loader_version")}")
 
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${gradle.extra.get("fabric_version")}")
 
-    modImplementation("maven.modrinth:bits-and-chisels:${project.property("bits_and_chisels_version")}")
-    modImplementation("maven.modrinth:spark:${project.property("spark_version")}")
+    modImplementation("maven.modrinth:bits-and-chisels:${gradle.extra.get("bits_and_chisels_version")}")
+    modImplementation("maven.modrinth:spark:${gradle.extra.get("spark_version")}")
 }
 
 tasks.processResources {
     inputs.property("version", project.version)
     inputs.property("minecraft_version", project.property("minecraft_version"))
-    inputs.property("loader_version", project.property("loader_version"))
+    inputs.property("loader_version", gradle.extra.get("loader_version"))
     filteringCharset = "UTF-8"
 
     filesMatching("fabric.mod.json") {
         expand(
             "version" to project.version,
             "minecraft_version" to project.property("minecraft_version")!!,
-            "loader_version" to project.property("loader_version")!!,
-            "kotlin_loader_version" to project.property("kotlin_loader_version")!!
+            "loader_version" to gradle.extra.get("loader_version")!!,
+            "kotlin_loader_version" to gradle.extra.get("kotlin_loader_version")!!
         )
     }
 }
